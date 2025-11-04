@@ -1,6 +1,6 @@
-create database bai_tap;
+create database ss1_bai_tap;
 
-use bai_tap;	
+use ss1_bai_tap;	
 
 -- bài  thực hành 
 create table Student(
@@ -21,4 +21,4 @@ id int,
 name varchar(200),
 age int ,
 country varchar(200)
-);
+);id
