@@ -31,6 +31,6 @@ order by kh.ma_khach_hang, hd.ma_hop_dong;
 -- cau 6
 select dv.ma_dich_vu, dv.ten_dich_vu, dv.dien_tich, dv.chi_phi_thue, ldv.ten_loai_dich_vu
 from dich_vu dv left join loai_dich_vu ldv on ldv.ma_loai_dich_vu = dv.ma_loai_dich_vu 
-left join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu and year(hd.ngay_lam_hop_dong) = 2021 and month(hd.ngay_lam_hop_dong) between 1 and 3
+				left join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu and year(hd.ngay_lam_hop_dong) = 2021 and month(hd.ngay_lam_hop_dong) between 1 and 3
 where  hd.ma_hop_dong is null 
 ORDER BY dv.ma_dich_vu;
