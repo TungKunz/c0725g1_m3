@@ -34,3 +34,35 @@ from dich_vu dv left join loai_dich_vu ldv on ldv.ma_loai_dich_vu = dv.ma_loai_d
 				left join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu and year(hd.ngay_lam_hop_dong) = 2021 and month(hd.ngay_lam_hop_dong) between 1 and 3
 where  hd.ma_hop_dong is null 
 ORDER BY dv.ma_dich_vu;
+
+-- cau 7
+select dv.ma_dich_vu, dv.ten_dich_vu, dv.dien_tich, dv.so_nguoi_toi_da, dv.chi_phi_thue
+from dich_vu_di_kem dvdk join hop_dong_chi_tiet hdct on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem
+						join hop_dong hd on hd.ma_hop_dong= hdct.ma_hop_dong
+						join dich_vu dv on dv.ma_dich_vu = hd.ma_dich_vu
+where year(ngay_lam_hop_dong)=2020 and dv.ma_dich_vu not in( select dv.ma_dich_vu
+						from dich_vu_di_kem dvdk join hop_dong_chi_tiet hdct on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem
+						join hop_dong hd on hd.ma_hop_dong= hdct.ma_hop_dong
+						join dich_vu dv on dv.ma_dich_vu = hd.ma_dich_vu
+						where year(ngay_lam_hop_dong)=2021)
+group by dv.ma_dich_vu;
+
+-- cau 8
+select distinct ho_ten 
+from khach_hang;
+
+-- cau 9 
+SELECT 
+    MONTH(hd.ngay_lam_hop_dong) AS thang,
+    COUNT(hd.ma_khach_hang) AS so_khach_dat_phong
+FROM hop_dong hd
+WHERE YEAR(hd.ngay_lam_hop_dong) = 2021
+GROUP BY MONTH(hd.ngay_lam_hop_dong)
+ORDER BY thang;
+
+-- cau 10
+select hd.ma_hop_dong, hd.ngay_lam_hop_dong, hd.ngay_ket_thuc,hd.tien_dat_coc, sum(so_luong) as sum
+from hop_dong hd left join hop_dong_chi_tiet hdct on hd.ma_hop_dong= hdct.ma_hop_dong
+				 left join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem
+group by hd.ma_hop_dong
+order by hd.ma_hop_dong asc;
