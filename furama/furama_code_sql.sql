@@ -77,10 +77,58 @@ where lk.ten_loai_khach= 'Diamond' and (kh.dia_chi like '% Vinh' or kh.dia_chi l
 
 -- cau 12
 -- cau 13
+select dvdk.ma_dich_vu_di_kem,ten_dich_vu_di_kem, sum(so_luong) as max
+from dich_vu_di_kem dvdk join hop_dong_chi_tiet hdct on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem
+						join hop_dong hd on hd.ma_hop_dong= hdct.ma_hop_dong
+						join khach_hang kh on kh.ma_khach_hang = hd.ma_khach_hang
+group by dvdk.ma_dich_vu_di_kem,ten_dich_vu_di_kem
+having sum(hdct.so_luong) = ( select max(t.so_luong) from (
+        select sum(hdct2.so_luong) as so_luong
+        from dich_vu_di_kem dvdk2
+        join hop_dong_chi_tiet hdct2 on dvdk2.ma_dich_vu_di_kem = hdct2.ma_dich_vu_di_kem
+        group by dvdk2.ma_dich_vu_di_kem
+    ) t
+);
 -- cau 14
-select hd.ma_hop_dong, ten_loai_dich_vu, ten_dich_vu_di_kem, count(hdct.ma_dich_vu_di_kem) as so_lan_su_dung
-from loai_dich_vu ldv left join dich_vu dv on ldv.ma_loai_dich_vu = dv.ma_loai_dich_vu
-						join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu
-                        join hop_dong_chi_tiet hdct on hdct.ma_hop_dong= hd.ma_hop_dong
-                        join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
-group by hd.ma_hop_dong, ten_loai_dich_vu, ten_dich_vu_di_kem
+select hdct.ma_hop_dong, ldv.ten_loai_dich_vu, dvdk.ten_dich_vu_di_kem, count(hdct.ma_dich_vu_di_kem) as so_lan_su_dung
+from loai_dich_vu ldv join dich_vu dv on ldv.ma_loai_dich_vu = dv.ma_loai_dich_vu
+					  join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu
+					  join hop_dong_chi_tiet hdct on hdct.ma_hop_dong = hd.ma_hop_dong
+					  join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+where hdct.ma_dich_vu_di_kem in ( select ma_dich_vu_di_kem from hop_dong_chi_tiet
+								  group by ma_dich_vu_di_kem
+								  having COUNT(*) = 1
+)
+group by  hdct.ma_hop_dong, ldv.ten_loai_dich_vu, dvdk.ten_dich_vu_di_kem
+order by hdct.ma_hop_dong, ldv.ten_loai_dich_vu, dvdk.ten_dich_vu_di_kem;
+
+-- cau 15 
+select nv.ma_nhan_vien, ho_va_ten, so_dien_thoai, dia_chi, coalesce(count(hd.ma_nhan_vien),0) as so_luong
+from nhan_vien nv left join hop_dong hd on nv.ma_nhan_vien= hd.ma_nhan_vien
+where (year(ngay_lam_hop_dong) between 2020 and 2021)
+group by nv.ma_nhan_vien, ho_va_ten, so_dien_thoai, dia_chi
+having count(hd.ma_nhan_vien) <=3;
+
+-- cau 16
+-- thay select bằng delete
+select nv.ma_nhan_vien
+from nhan_vien nv left join hop_dong hd on hd.ma_nhan_vien = nv.ma_nhan_vien
+where hd.ma_hop_dong is null;
+
+-- cau 17 
+update khach_hang
+set ma_loai_khach = 1
+where ma_khach_hang in (
+    select * from (
+        select kh.ma_khach_hang
+        from loai_khach lk join khach_hang kh on lk.ma_loai_khach = kh.ma_loai_khach
+						   join hop_dong hd on hd.ma_khach_hang = kh.ma_khach_hang
+						   join hop_dong_chi_tiet hdct on hdct.ma_hop_dong = hd.ma_hop_dong
+						   join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+						   join dich_vu dv on dv.ma_dich_vu = hd.ma_dich_vu
+        where lk.ten_loai_khach like 'Platinium'
+        group by kh.ma_khach_hang
+        having sum(ifnull(chi_phi_thue,0) + ifnull(so_luong,0) * ifnull(gia,0)) > 10000000
+    ) t
+);
+
