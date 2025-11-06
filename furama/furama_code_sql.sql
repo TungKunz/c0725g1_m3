@@ -18,10 +18,10 @@ GROUP BY kh.ma_khach_hang
 order by count(hd.ma_khach_hang);
 
 -- cau 5 
-select kh.ma_khach_hang, kh.ho_ten, lk.ten_loai_khach, hd.ma_hop_dong, dv.ten_dich_vu, hd.ngay_lam_hop_dong, hd.ngay_ket_thuc,
-    coalesce(dv.chi_phi_thue, 0) + coalesce(SUM(ct.so_luong * dvdk.gia), 0) as tong_tien
-from khach_hang kh left join loai_khach lk on kh.ma_loai_khach = lk.ma_loai_khach
-					left join hop_dong hd on kh.ma_khach_hang = hd.ma_khach_hang
+select kh.ma_khach_hang, kh.ho_ten, lk.ten_loai_khach, hd.ma_hop_dong, dv.ten_dich_vu, hd.ngay_lam_hop_dong, hd.ngay_ket_thuc
+   , sum((dv.chi_phi_thue + coalesce(ct.so_luong,0) * coalesce(dvdk.gia,0))) AS tong_tien
+from khach_hang kh join loai_khach lk on kh.ma_loai_khach = lk.ma_loai_khach
+					join hop_dong hd on kh.ma_khach_hang = hd.ma_khach_hang
 					left join dich_vu dv on hd.ma_dich_vu = dv.ma_dich_vu 
                     left join hop_dong_chi_tiet ct on ct.ma_hop_dong = hd.ma_hop_dong
                     left join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = ct.ma_dich_vu_di_kem
@@ -66,3 +66,21 @@ from hop_dong hd left join hop_dong_chi_tiet hdct on hd.ma_hop_dong= hdct.ma_hop
 				 left join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem
 group by hd.ma_hop_dong
 order by hd.ma_hop_dong asc;
+
+-- cau 11	
+select dvdk.* , kh.ma_khach_hang, kh.ho_ten ,kh.dia_chi
+from khach_hang kh join loai_khach lk on kh.ma_loai_khach= lk.ma_loai_khach
+					join hop_dong hd on  kh.ma_khach_hang = hd.ma_khach_hang
+					join hop_dong_chi_tiet hdct on hdct.ma_hop_dong= hd.ma_hop_dong
+					join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+where lk.ten_loai_khach= 'Diamond' and (kh.dia_chi like '% Vinh' or kh.dia_chi like '% Quảng Ngãi');
+
+-- cau 12
+-- cau 13
+-- cau 14
+select hd.ma_hop_dong, ten_loai_dich_vu, ten_dich_vu_di_kem, count(hdct.ma_dich_vu_di_kem) as so_lan_su_dung
+from loai_dich_vu ldv left join dich_vu dv on ldv.ma_loai_dich_vu = dv.ma_loai_dich_vu
+						join hop_dong hd on hd.ma_dich_vu = dv.ma_dich_vu
+                        join hop_dong_chi_tiet hdct on hdct.ma_hop_dong= hd.ma_hop_dong
+                        join dich_vu_di_kem dvdk on dvdk.ma_dich_vu_di_kem = hdct.ma_dich_vu_di_kem
+group by hd.ma_hop_dong, ten_loai_dich_vu, ten_dich_vu_di_kem
