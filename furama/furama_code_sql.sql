@@ -131,4 +131,17 @@ where ma_khach_hang in (
         having sum(ifnull(chi_phi_thue,0) + ifnull(so_luong,0) * ifnull(gia,0)) > 10000000
     ) t
 );
+-- cau 18
 
+-- cau 19
+select dvdk.ma_dich_vu_di_kem, ten_dich_vu_di_kem, sum(hdct.so_luong),gia
+from dich_vu_di_kem dvdk left join hop_dong_chi_tiet hdct on dvdk.ma_dich_vu_di_kem= hdct.ma_dich_vu_di_kem 
+group by dvdk.ma_dich_vu_di_kem, ten_dich_vu_di_kem,gia;
+SET SQL_SAFE_UPDATES = 0;
+update dich_vu_di_kem as dvdk set dvdk.gia = dvdk.gia * 2
+where dvdk.ma_dich_vu_di_kem in ( select ma_dich_vu_di_kem from (select ma_dich_vu_di_kem, sum(hdct.so_luong) 
+									from hop_dong_chi_tiet hdct 
+                                    group by ma_dich_vu_di_kem
+                                    having sum(hdct.so_luong) >10) as t
+                                    );
+SET SQL_SAFE_UPDATES = 1;
