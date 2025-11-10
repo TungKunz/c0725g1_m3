@@ -101,7 +101,7 @@ from khach_hang kh
          left join hop_dong_chi_tiet hdct on hdct.ma_hop_dong = hd.ma_hop_dong
          join dich_vu dv on dv.ma_dich_vu = hd.ma_dich_vu
 where (year(ngay_lam_hop_dong) = 2020 and month(ngay_lam_hop_dong) between 10 and 12)
-  and hd.ma_hop_dong in
+  and hd.ma_hop_dong not in
       (select hd.ma_hop_dong
        from khach_hang kh
                 join hop_dong hd on kh.ma_khach_hang = hd.ma_khach_hang
