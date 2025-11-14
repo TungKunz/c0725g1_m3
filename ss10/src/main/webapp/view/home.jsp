@@ -38,6 +38,6 @@
     </c:forEach>
 
 </table>
-<a href="/calcutor" class="btn">Chuyển đổi tiền tệ</a>
+<a href="/calcutor" class="btn">Thực hiện phép tính</a>
 </body>
 </html>

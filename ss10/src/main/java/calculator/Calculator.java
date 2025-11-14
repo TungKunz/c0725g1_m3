@@ -50,6 +50,6 @@ public class Calculator extends HttpServlet {
         req.setAttribute("operator",operator);
         req.setAttribute("result",result);
         req.setAttribute("text",text);
-        req.getRequestDispatcher("/view/calcutor.jsp").forward(req,resp);
+        req.getRequestDispatcher("/view/result.jsp").forward(req,resp);
     }
 }
